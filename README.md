@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Parenting Meal Planner & Edukasi
 
-## Getting Started
+Aplikasi web lengkap untuk membantu orang tua merencanakan makanan sehat untuk anak sesuai usia, kebutuhan gizi, dan preferensi keluarga. Dilengkapi dengan edukasi praktis seputar gizi, MPASI, dan pola makan anak.
 
-First, run the development server:
+## 🎯 Target User
+- Orang tua bayi & balita (0–5 tahun)
+- Keluarga dengan anak sekolah (6–12 tahun)
+- UMKM katering sehat/daycare
 
+## ✨ Fitur Utama
+
+### 🍽️ Meal Planner Otomatis
+- Generate menu harian/mingguan berdasarkan usia anak
+- Algoritma cerdas untuk variasi menu yang beragam
+- Penyesuaian porsi otomatis sesuai umur/berat badan
+- Support untuk alergi dan preferensi diet (halal, vegetarian, dll)
+
+### 🤖 AI Recipe Generator
+- Input bahan yang tersedia → AI buat resep sehat
+- Rekomendasi alternatif jika bahan habis/mahal
+- Tips memasak khusus untuk anak
+- Analisis nutrisi otomatis
+
+### 📊 Nutrisi & Kalkulasi
+- Info kalori, protein, karbohidrat, lemak, serat
+- Visualisasi nutrisi dengan pie chart & bar chart
+- Porsi otomatis menyesuaikan usia anak
+- Tracking harian nutrisi
+
+### 🛒 Shopping List Otomatis
+- Generate daftar belanja dari meal plan
+- Export ke PDF atau share ke WhatsApp
+- Kategori bahan terorganisir
+- Checklist saat berbelanja
+
+### 📚 Edukasi Parenting & Gizi
+- Artikel sesuai usia anak (MPASI, picky eater, dll)
+- Tips praktis berbasis masalah
+- Panduan lengkap nutrisi anak
+- Content yang terus diupdate
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 dengan App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Development**: ESLint, Prettier
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm atau yarn
+
+### Installation
+
+1. Clone repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd parenting-meal-planner
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run development server
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) di browser
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── page.tsx           # Homepage
+│   ├── meal-planner/      # Meal planning feature
+│   ├── ai-recipe/         # AI recipe generator
+│   ├── recipes/           # Recipe collection
+│   ├── shopping-list/     # Shopping list manager
+│   ├── education/         # Educational content
+│   └── profile/           # User profile
+├── components/            # Reusable components
+│   ├── ui/               # shadcn/ui components
+│   ├── navigation/       # Navigation components
+│   └── nutrition/        # Nutrition charts
+├── data/                 # Mock data & constants
+├── types/                # TypeScript type definitions
+└── lib/                  # Utility functions
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Design System
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Color Palette
+- **Primary**: Pink (#ec4899) - Warm, family-friendly
+- **Secondary**: Gray tones for text and backgrounds
+- **Accent**: Blue, Green, Yellow untuk kategori dan status
 
-## Deploy on Vercel
+### Typography
+- **Font**: Geist Sans (modern, readable)
+- **Hierarchy**: Clear heading structure dengan consistent spacing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Components
+- Menggunakan shadcn/ui untuk konsistensi
+- Responsive design untuk mobile & desktop
+- Accessible dengan proper ARIA labels
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📱 Features Overview
+
+### 1. Homepage
+- Hero section dengan value proposition
+- Feature cards dengan penjelasan lengkap
+- Call-to-action untuk mulai meal planning
+
+### 2. Meal Planner
+- Form input usia anak, preferensi, alergi
+- Generate meal plan 3/7/30 hari
+- Tampilan tabs untuk setiap hari
+- Export ke PDF
+
+### 3. AI Recipe Generator
+- Input multiple bahan makanan
+- AI generate resep custom
+- Nutrition analysis dengan charts
+- Tips & alternatif resep
+
+### 4. Recipe Collection
+- Filter berdasarkan usia, jenis makanan, kesulitan
+- Search functionality
+- Detail resep dengan step-by-step
+- Nutrition information
+
+### 5. Shopping List
+- Generate dari meal plan
+- Add custom items
+- Kategori bahan (protein, sayuran, dll)
+- Export & share functionality
+
+### 6. Education
+- Artikel berdasarkan kategori & usia
+- Search & filter content
+- Markdown-style content rendering
+- Reading time estimation
+
+### 7. Profile
+- Manage multiple children data
+- Family preferences
+- Notification settings
+- Account management
+
+## 🔮 Future Enhancements
+
+### Database Integration
+- User authentication
+- Save meal plans & recipes
+- Sync across devices
+- Community features
+
+### Advanced Features
+- Video tutorials
+- Community forum
+- Premium meal plans
+- Nutrition tracking history
+- Integration dengan e-commerce
+
+### Mobile App
+- React Native version
+- Offline functionality
+- Push notifications
+- Camera untuk scan bahan
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👥 Team
+
+Developed with ❤️ for Indonesian families
