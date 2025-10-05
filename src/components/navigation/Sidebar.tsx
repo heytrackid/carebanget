@@ -143,7 +143,7 @@ export function Sidebar({ children }: SidebarProps) {
             <Link href="/dashboard" className="flex items-center space-x-2">
               <Baby className="h-8 w-8 text-pink-500" />
               <span className="font-bold text-xl text-gray-900">
-                Perencana Makan
+                Carebanget
               </span>
             </Link>
           )}
@@ -152,22 +152,6 @@ export function Sidebar({ children }: SidebarProps) {
               <Baby className="h-8 w-8 text-pink-500" />
             </Link>
           )}
-
-          {/* Collapse Button - Hidden on mobile */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleCollapse}
-            className="hidden lg:flex"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-
         {/* User Profile */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -335,7 +319,7 @@ export function Sidebar({ children }: SidebarProps) {
             <Link href="/dashboard" className="flex items-center space-x-2">
               <Baby className="h-6 w-6 text-pink-500" />
               <span className="font-bold text-lg text-gray-900">
-                Perencana Makan
+                Carebanget
               </span>
             </Link>
             <div className="w-10" /> {/* Spacer for centering */}
