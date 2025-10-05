@@ -1,26 +1,26 @@
 {
   "name": "Carebanget",
-  "short_name": "Meal Planner",
-  "description": "AI-powered meal planning and nutrition tracking for parents",
+  "short_name": "Carebanget",
+  "description": "AI-powered parenting platform for Indonesian families",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
   "scope": "/",
+  "lang": "id-ID",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ],
-  "categories": ["health", "lifestyle", "productivity"],
-  "lang": "id",
-  "dir": "ltr"
+  ]
 }

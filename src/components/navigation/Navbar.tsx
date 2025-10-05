@@ -1,10 +1,10 @@
 'use client';
+import { HeaderLogo } from '@/components/ui/logo';
 
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Baby, Calendar, BookOpen, ShoppingCart, User, Sparkles, ClipboardList, TrendingUp, CheckSquare } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Baby },
@@ -28,13 +28,7 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Baby className="h-8 w-8 text-pink-500" />
-              <span className="font-bold text-xl text-gray-900">
-                Meal Planner
-              </span>
-            </Link>
-          </div>
-
+            <HeaderLogo />
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => {

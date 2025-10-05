@@ -1,4 +1,5 @@
 'use client';
+import { IconLogo } from '@/components/ui/logo';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -135,6 +136,9 @@ export function Sidebar({ children }: SidebarProps) {
       )}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center justify-center mb-4">
+            <IconLogo />
+          </div>
           {!isCollapsed && (
             <Link href="/dashboard" className="flex items-center space-x-2">
               <Baby className="h-8 w-8 text-pink-500" />
