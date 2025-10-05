@@ -7,10 +7,6 @@
         "mcp-remote",
         "https://mcp.supabase.com/mcp?project_ref=vmibhmxfjhkgmatuslsp"
       ]
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["chrome-devtools-mcp@latest"]
     }
   }
 }
