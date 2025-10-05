@@ -1,3 +1,5 @@
+import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -16,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
+  useRealtimeSync();
+
   children,
 }: {
   children: React.ReactNode;
@@ -25,6 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
           <OfflineProvider>
+          <RealtimeProvider />
             {children}
           </OfflineProvider>
         </QueryClientProvider>

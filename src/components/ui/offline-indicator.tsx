@@ -1,3 +1,5 @@
+import { useRealtimeStatus } from "@/hooks/useRealtimeStatus";
+import { Zap } from "lucide-react";
 'use client';
 
 import { useOffline } from '@/contexts/OfflineContext';
@@ -5,6 +7,7 @@ import { Wifi, WifiOff, Cloud, CloudOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function OfflineIndicator() {
+  const { isConnected: isRealtimeConnected, connectionStatus } = useRealtimeStatus();
   const { isOnline, isRegistered, lastSync } = useOffline();
   const [showIndicator, setShowIndicator] = useState(false);
 
@@ -31,6 +34,7 @@ export function OfflineIndicator() {
       {isOnline ? (
         <>
           <Wifi className="w-4 h-4" />
+          {isRealtimeConnected           <Wifi className="w-4 h-4" />          <Wifi className="w-4 h-4" /> <Zap className="w-4 h-4 text-yellow-500" title="Real-time sync active" />}
           <span className="text-sm font-medium">Online</span>
           {isRegistered && <Cloud className="w-4 h-4 text-green-600" />}
         </>
