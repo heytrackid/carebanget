@@ -28,7 +28,7 @@ export function Logo({
 
   const dimensions = getLogoSize();
   const logoSrc = variant === 'icon' ? '/icon.svg' : '/logo.svg';
-
+  
   const logoElement = (
     <Image
       src={logoSrc}
@@ -66,10 +66,8 @@ export function HeaderLogo() {
 // Logo icon kecil untuk sidebar/mobile menu
 export function IconLogo() {
   return (
-    <Logo 
-      size="small" 
-      variant="icon"
-      className="w-8 h-8"
-    />
+    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+      <span className="text-white text-xs font-bold">C</span>
+    </div>
   );
 }
