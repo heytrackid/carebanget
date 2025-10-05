@@ -1,3 +1,4 @@
+import { AppPreloader } from "@/components/ui/app-preloader";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -23,11 +24,14 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <QueryClientProvider client={queryClient}>
+        <AppPreloader>
+  <QueryClientProvider client={queryClient}>
           <OfflineProvider>
             {children}
           </OfflineProvider>
-        </QueryClientProvider>
+        
+  </QueryClientProvider>
+</AppPreloader>
       </body>
     </html>
   );
