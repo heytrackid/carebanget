@@ -1,5 +1,5 @@
 import { AppPreloader } from "@/components/ui/app-preloader";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,8 +12,12 @@ export const metadata: Metadata = {
   title: "Parenting Meal Planner",
   description: "AI-powered meal planning and nutrition tracking for parents",
   manifest: "/manifest.json",
-  themeColor: "#667eea",
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#667eea',
 };
 
 export default function RootLayout({
@@ -25,13 +29,12 @@ export default function RootLayout({
     <html lang="id">
       <body className={inter.className}>
         <AppPreloader>
-  <QueryClientProvider client={queryClient}>
-          <OfflineProvider>
-            {children}
-          </OfflineProvider>
-        
-  </QueryClientProvider>
-</AppPreloader>
+          <QueryClientProvider client={queryClient}>
+            <OfflineProvider>
+              {children}
+            </OfflineProvider>
+          </QueryClientProvider>
+        </AppPreloader>
       </body>
     </html>
   );
