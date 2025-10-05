@@ -6,6 +6,19 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  // Bundle Splitting & Code Splitting
+  experimental: {
+    optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', 'recharts'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+
   // Image Optimization
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -57,25 +70,36 @@ const nextConfig: NextConfig = {
     if (!dev && !isServer) {
       config.optimization.splitChunks.chunks = 'all';
       config.optimization.splitChunks.cacheGroups = {
-        ...config.optimization.splitChunks.cacheGroups,
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           chunks: 'all',
+          priority: 10,
         },
         recharts: {
           test: /[\\/]node_modules[\\/]recharts[\\/]/,
           name: 'recharts',
           chunks: 'all',
-          priority: 10,
+          priority: 20,
         },
-        'radix-ui': {
+        radix: {
           test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
           name: 'radix-ui',
           chunks: 'all',
-          priority: 10,
+          priority: 20,
+        },
+        supabase: {
+          test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+          name: 'supabase',
+          chunks: 'all',
+          priority: 20,
         },
       };
+    }
+
+    // Enable tree shaking
+    if (!dev) {
+      config.optimization.usedExports = true;
     }
 
     return config;

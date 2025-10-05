@@ -24,8 +24,8 @@ import {
   CheckSquare
 } from 'lucide-react';
 import { mockChild } from '@/data/mockData';
-import { WeeklyChart } from '@/components/dashboard/WeeklyChart';
-import { TaskWidget } from '@/components/dashboard/TaskWidget';
+import { WeeklyChart } from '@/components/dashboard/WeeklyChart.lazy';
+import { TaskWidget } from '@/components/dashboard/TaskWidget.lazy';
 import { NotificationPanel } from '@/components/notifications/NotificationPanel';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { mockTasks } from '@/data/mockTasks';
