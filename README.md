@@ -1,4 +1,4 @@
-# Parenting Meal Planner & Edukasi
+# Carebanget & Edukasi
 
 Aplikasi web lengkap untuk membantu orang tua merencanakan makanan sehat untuk anak sesuai usia, kebutuhan gizi, dan preferensi keluarga. Dilengkapi dengan edukasi praktis seputar gizi, MPASI, dan pola makan anak.
 
