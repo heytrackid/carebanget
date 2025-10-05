@@ -1,5 +1,6 @@
 'use client';
 import { IconLogo } from '@/components/ui/logo';
+import { IconLogo } from '@/components/ui/logo';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
