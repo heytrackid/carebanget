@@ -1,8 +1,19 @@
 'use client';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Lazy load the chart component to reduce bundle size
+const ChartContent = dynamic(() => import('./WeeklyChartContent'), {
+  loading: () => (
+    <div className="h-64 sm:h-80 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    </div>
+  ),
+  ssr: false // Disable SSR for charts
+});
 
 const weeklyNutritionData = [
   { day: 'Sen', calories: 950, protein: 28, carbs: 120, fat: 35 },
@@ -39,29 +50,19 @@ export function WeeklyChart() {
             <TabsTrigger value="nutrition">Nutrisi</TabsTrigger>
             <TabsTrigger value="completion">Meal Completion</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="nutrition" className="space-y-4">
-            <div className="h-64 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={weeklyNutritionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value, name) => [
-                      `${value}${name === 'calories' ? ' kcal' : 'g'}`, 
-                      name === 'calories' ? 'Kalori' : 
-                      name === 'protein' ? 'Protein' :
-                      name === 'carbs' ? 'Karbohidrat' : 'Lemak'
-                    ]}
-                  />
-                  <Line type="monotone" dataKey="calories" stroke="#3b82f6" strokeWidth={2} />
-                  <Line type="monotone" dataKey="protein" stroke="#10b981" strokeWidth={2} />
-                  <Line type="monotone" dataKey="carbs" stroke="#f59e0b" strokeWidth={2} />
-                  <Line type="monotone" dataKey="fat" stroke="#ef4444" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <Suspense fallback={
+              <div className="h-64 sm:h-80 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            }>
+              <ChartContent
+                type="nutrition"
+                data={weeklyNutritionData}
+                className="h-64 sm:h-80"
+              />
+            </Suspense>
             <div className="flex justify-center gap-3 sm:gap-6 text-xs sm:text-sm flex-wrap">
               <div className="flex items-center gap-1 sm:gap-2">
                 <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full"></div>
@@ -81,22 +82,19 @@ export function WeeklyChart() {
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="completion" className="space-y-4">
-            <div className="h-64 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mealCompletionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Completion']} />
-                  <Bar dataKey="breakfast" stackId="a" fill="#fbbf24" />
-                  <Bar dataKey="lunch" stackId="a" fill="#34d399" />
-                  <Bar dataKey="dinner" stackId="a" fill="#60a5fa" />
-                  <Bar dataKey="snack" stackId="a" fill="#a78bfa" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <Suspense fallback={
+              <div className="h-64 sm:h-80 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            }>
+              <ChartContent
+                type="completion"
+                data={mealCompletionData}
+                className="h-64 sm:h-80"
+              />
+            </Suspense>
             <div className="flex justify-center gap-3 sm:gap-6 text-xs sm:text-sm flex-wrap">
               <div className="flex items-center gap-1 sm:gap-2">
                 <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-400 rounded-full"></div>

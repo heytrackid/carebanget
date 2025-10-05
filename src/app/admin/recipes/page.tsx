@@ -15,6 +15,7 @@ import { Plus, Edit, Trash2, Save, Eye, Search, Filter, MoreHorizontal, Clock } 
 import { mockRecipes } from '@/data/mockData';
 import { Recipe } from '@/types';
 import Link from 'next/link';
+import { BulkActions, BulkAction, useBulkSelection } from '@/components/ui/bulk-actions';
 
 // Reusable Admin Layout (extracted to avoid duplication)
 function AdminLayout({ children }) {
@@ -360,7 +361,17 @@ export default function AdminRecipesPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Bulk selection using the reusable hook
+  const {
+    selectedItems,
+    setSelectedItems,
+    toggleItem,
+    toggleAll,
+    clearSelection,
+    isSelected,
+    selectedCount
+  } = useBulkSelection(filteredRecipes)
 
   // Load recipes
   useEffect(() => {
@@ -413,8 +424,8 @@ export default function AdminRecipesPage() {
 
   const handleBulkDelete = () => {
     if (confirm(`Yakin ingin menghapus ${selectedItems.length} resep?`)) {
-      setRecipes(prev => prev.filter(r => !selectedItems.includes(r.id)));
-      setSelectedItems([]);
+      setRecipes(prev => prev.filter(r => !selectedItems.some(selected => selected.id === r.id)));
+      clearSelection();
     }
   };
 
@@ -563,7 +574,6 @@ export default function AdminRecipesPage() {
                   <TableHead>Waktu</TableHead>
                   <TableHead>Usia</TableHead>
                   <TableHead>Servings</TableHead>
-                  <TableHead className="w-24">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -571,14 +581,8 @@ export default function AdminRecipesPage() {
                   <TableRow key={recipe.id}>
                     <TableCell>
                       <Checkbox
-                        checked={selectedItems.includes(recipe.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedItems(prev => [...prev, recipe.id]);
-                          } else {
-                            setSelectedItems(prev => prev.filter(id => id !== recipe.id));
-                          }
-                        }}
+                        checked={isSelected(recipe)}
+                        onCheckedChange={() => toggleItem(recipe)}
                       />
                     </TableCell>
                     <TableCell>

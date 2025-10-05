@@ -1,36 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { NotificationProvider } from "@/contexts/NotificationContext";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { OfflineProvider } from '@/contexts/OfflineContext';
+import { queryClient } from '@/lib/react-query';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Perencana Makan Parenting",
-  description: "Aplikasi perencanaan makanan sehat untuk anak dan edukasi parenting",
+  title: "Parenting Meal Planner",
+  description: "AI-powered meal planning and nutrition tracking for parents",
+  manifest: "/manifest.json",
+  themeColor: "#667eea",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NotificationProvider>
-          {children}
-        </NotificationProvider>
+    <html lang="id">
+      <body className={inter.className}>
+        <QueryClientProvider client={queryClient}>
+          <OfflineProvider>
+            {children}
+          </OfflineProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

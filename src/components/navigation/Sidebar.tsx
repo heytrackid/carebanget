@@ -23,7 +23,8 @@ import {
   Bot,
   ChevronDown,
   Home,
-  CheckCircle2
+  CheckCircle2,
+  Wallet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +56,7 @@ const navigationGroups = [
     name: 'Pengelolaan',
     items: [
       { name: 'Pengelola Tugas', href: '/tasks', icon: CheckCircle2, description: 'Kelola tugas-tugas parenting' },
+      { name: 'Pengeluaran Anak', href: '/expenses', icon: Wallet, description: 'Kelola pengeluaran untuk anak' },
       { name: 'Daftar Belanja', href: '/shopping-list', icon: ShoppingCart, description: 'Belanja bahan makanan otomatis' },
       { name: 'Profil', href: '/profile', icon: User, description: 'Kelola profil keluarga dan preferensi' }
     ]

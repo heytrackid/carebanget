@@ -10,7 +10,7 @@ import { Recipe } from '@/types';
 import Link from 'next/link';
 
 // Recipe Form Component (same as in the list page)
-function RecipeForm({ recipe, onSave, onCancel }) {
+function RecipeForm({ recipe, onSave, onCancel }: { recipe?: any; onSave: (data: any) => void; onCancel: () => void }) {
   const [formData, setFormData] = useState({
     name: recipe?.name || '',
     description: recipe?.description || '',
@@ -26,7 +26,7 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     tags: recipe?.tags || [],
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     const recipeData = {
@@ -54,16 +54,16 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     });
   };
 
-  const updateIngredient = (index, field, value) => {
+  const updateIngredient = (index: number, field: string, value: any) => {
     const updatedIngredients = [...formData.ingredients];
     updatedIngredients[index] = { ...updatedIngredients[index], [field]: value };
     setFormData({ ...formData, ingredients: updatedIngredients });
   };
 
-  const removeIngredient = (index) => {
+  const removeIngredient = (index: number) => {
     setFormData({
       ...formData,
-      ingredients: formData.ingredients.filter((_, i) => i !== index)
+      ingredients: formData.ingredients.filter((_: any, i: number) => i !== index)
     });
   };
 
@@ -74,16 +74,16 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     });
   };
 
-  const updateInstruction = (index, value) => {
+  const updateInstruction = (index: number, value: string) => {
     const updatedInstructions = [...formData.instructions];
     updatedInstructions[index] = value;
     setFormData({ ...formData, instructions: updatedInstructions });
   };
 
-  const removeInstruction = (index) => {
+  const removeInstruction = (index: number) => {
     setFormData({
       ...formData,
-      instructions: formData.instructions.filter((_, i) => i !== index)
+      instructions: formData.instructions.filter((_: any, i: number) => i !== index)
     });
   };
 
@@ -191,7 +191,7 @@ function RecipeForm({ recipe, onSave, onCancel }) {
           </Button>
         </div>
         <div className="space-y-2">
-          {formData.ingredients.map((ingredient, index) => (
+          {formData.ingredients.map((ingredient: any, index: number) => (
             <div key={ingredient.id} className="flex gap-2 items-end">
               <input
                 type="text"
@@ -249,7 +249,7 @@ function RecipeForm({ recipe, onSave, onCancel }) {
           </Button>
         </div>
         <div className="space-y-2">
-          {formData.instructions.map((instruction, index) => (
+          {formData.instructions.map((instruction: string, index: number) => (
             <div key={index} className="flex gap-2 items-start">
               <span className="text-sm font-medium mt-2 w-6">{index + 1}.</span>
               <input

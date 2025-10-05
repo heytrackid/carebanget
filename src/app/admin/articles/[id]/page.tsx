@@ -11,7 +11,7 @@ import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import Link from 'next/link';
 
 // Article Form Component
-function ArticleForm({ article, onSave, onCancel }) {
+function ArticleForm({ article, onSave, onCancel }: { article?: any; onSave: (data: any) => void; onCancel: () => void }) {
   const [formData, setFormData] = useState({
     title: article?.title || '',
     content: article?.content || '',
@@ -22,7 +22,7 @@ function ArticleForm({ article, onSave, onCancel }) {
     status: article?.status || 'draft'
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // Calculate read time based on content length (rough estimate)

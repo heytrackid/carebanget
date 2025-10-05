@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense, lazy } from 'react';
 import { Sidebar } from '@/components/navigation/Sidebar';
 import { Task } from '@/types';
 import { mockTasks } from '@/data/mockTasks';
 import { TaskCard } from '@/components/tasks/TaskCard';
-import { TaskForm } from '@/components/tasks/TaskForm';
 import { TaskFilters, TaskFilters as TaskFiltersType } from '@/components/tasks/TaskFilters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,6 +31,10 @@ import {
   Settings
 } from 'lucide-react';
 import { isToday, isTomorrow, isThisWeek, isPast } from 'date-fns';
+
+// Lazy load heavy components
+const TaskForm = lazy(() => import('@/components/tasks/TaskForm').then(module => ({ default: module.TaskForm })));
+const TaskStatsWrapper = lazy(() => import('@/components/tasks/TaskStatsWrapper').then(module => ({ default: module.TaskStatsWrapper })));
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
@@ -305,55 +308,27 @@ export default function TasksPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <ListTodo className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Total Tugas</p>
-                  <p className="text-2xl font-bold">{taskCounts.total}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-yellow-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Dalam Proses</p>
-                  <p className="text-2xl font-bold">{taskCounts.inProgress}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Selesai</p>
-                  <p className="text-2xl font-bold">{taskCounts.completed}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Terlambat</p>
-                  <p className="text-2xl font-bold">{taskCounts.overdue}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Suspense fallback={
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <div className="animate-pulse">
+                    <div className="flex items-center space-x-2">
+                      <div className="h-5 w-5 bg-gray-300 rounded"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-300 rounded w-16 mb-2"></div>
+                        <div className="h-6 bg-gray-300 rounded w-8"></div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        }>
+          <TaskStatsWrapper taskCounts={taskCounts} />
+        </Suspense>
 
         {/* Filters */}
         <Card className="mt-6">
@@ -493,15 +468,24 @@ export default function TasksPage() {
         </Tabs>
 
         {/* Task Form Dialog */}
-        <TaskForm
-          task={editingTask}
-          isOpen={isFormOpen}
-          onClose={() => {
-            setIsFormOpen(false);
-            setEditingTask(undefined);
-          }}
-          onSave={handleSaveTask}
-        />
+        <Suspense fallback={
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 flex items-center space-x-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <p>Loading form...</p>
+            </div>
+          </div>
+        }>
+          <TaskForm
+            task={editingTask}
+            isOpen={isFormOpen}
+            onClose={() => {
+              setIsFormOpen(false);
+              setEditingTask(undefined);
+            }}
+            onSave={handleSaveTask}
+          />
+        </Suspense>
       </div>
     </Sidebar>
   );

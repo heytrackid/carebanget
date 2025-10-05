@@ -260,8 +260,15 @@ export default function MealPlannerPage() {
                             <h4 className="font-medium mb-2">{meal.breakfast?.name}</h4>
                             <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
                               <span className="flex items-center gap-1">
-                                <div className="text-sm text-gray-600">
-                                  {(meal.breakfast?.prepTime || 0) + (meal.breakfast?.cookTime || 0)} min
+                                <Clock className="h-3 w-3" />
+                                {(meal.breakfast?.prepTime || 0) + (meal.breakfast?.cookTime || 0)} min
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {meal.breakfast?.servings} porsi
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600">{meal.breakfast?.description}</p>
                           </CardContent>
                         </Card>
 

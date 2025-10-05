@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { BookOpen, Search, Filter, Clock, Baby, Heart, AlertCircle, Eye, Grid3X3 } from 'lucide-react';
 import { mockEducationalContent } from '@/data/mockData';
 import { EducationalContent } from '@/types';
+import { useEducationalContent } from '@/hooks/useEducationalContent';
 
 type ViewMode = 'table' | 'grid';
 

@@ -10,15 +10,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { BulkActions, BulkAction, useBulkSelection } from '@/components/ui/bulk-actions';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, Edit, Trash2, Save, Eye, Search, Filter, MoreHorizontal, Download } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, Eye, Search, Filter, MoreHorizontal, Download, Edit3 } from 'lucide-react';
 import { mockEducationalContent } from '@/data/mockData';
 import { EducationalContent } from '@/types';
 import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import Link from 'next/link';
 
 // Reusable Admin Layout (extracted to avoid duplication)
-function AdminLayout({ children }) {
+function AdminLayout({ children }: { children: any }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
@@ -76,7 +77,7 @@ function AdminLayout({ children }) {
 }
 
 // Article Form Component
-function ArticleForm({ article, onSave, onCancel }) {
+function ArticleForm({ article, onSave, onCancel }: { article?: any, onSave: any, onCancel: any }) {
   const [formData, setFormData] = useState({
     title: article?.title || '',
     content: article?.content || '',
@@ -84,10 +85,10 @@ function ArticleForm({ article, onSave, onCancel }) {
     ageRange: article?.ageRange || { min: 0, max: 144 },
     tags: article?.tags || [],
     readTime: article?.readTime || 5,
-    status: article?.status || 'draft'
+    status: article?.status || 'published'
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // Calculate read time based on content length (rough estimate)
@@ -208,15 +209,21 @@ export default function AdminArticlesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Use bulk selection hook
+  const {
+    selectedItems,
+    setSelectedItems,
+    toggleItem,
+    toggleAll,
+    clearSelection,
+    isSelected
+  } = useBulkSelection(filteredArticles);
 
   // Load articles
   useEffect(() => {
     // In real app: fetch from API
-    setArticles(mockEducationalContent.map(article => ({
-      ...article,
-      status: article.status || 'published' // Default status
-    })));
+    setArticles(mockEducationalContent);
   }, []);
 
   // Filter articles
@@ -235,12 +242,8 @@ export default function AdminArticlesPage() {
       filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(article => article.status === selectedStatus);
-    }
-
     setFilteredArticles(filtered);
-  }, [articles, searchTerm, selectedCategory, selectedStatus]);
+  }, [articles, searchTerm, selectedCategory]);
 
   const handleSaveArticle = (articleData: EducationalContent) => {
     if (isEditing && selectedArticle) {
@@ -267,8 +270,8 @@ export default function AdminArticlesPage() {
 
   const handleBulkDelete = () => {
     if (confirm(`Yakin ingin menghapus ${selectedItems.length} artikel?`)) {
-      setArticles(prev => prev.filter(a => !selectedItems.includes(a.id)));
-      setSelectedItems([]);
+      setArticles(prev => prev.filter(a => !selectedItems.some(selected => selected.id === a.id)));
+      clearSelection();
     }
   };
 
@@ -289,7 +292,7 @@ export default function AdminArticlesPage() {
       'mpasi': '🍼 MPASI',
       'picky-eater': '😣 Picky Eater'
     };
-    return categories[category] || category;
+    return (categories as any)[category] || category;
   };
 
   return (
@@ -399,6 +402,36 @@ export default function AdminArticlesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+
+            {/* Bulk Actions */}
+            {selectedItems.length > 0 && (
+              <div className="mb-4">
+                <BulkActions
+                  items={filteredArticles}
+                  selectedItems={selectedItems}
+                  onSelectionChange={setSelectedItems}
+                  actions={[
+                    {
+                      id: "publish",
+                      label: "Publish Selected",
+                      icon: <Edit3 className="h-4 w-4" />,
+                      onExecute: (items) => {
+                        console.log("Publishing articles:", items);
+                        // Update status to published
+                        setArticles(prev => prev.map(a =>
+                          items.some(item => item.id === a.id)
+                            ? { ...a, status: 'published' as const }
+                            : a
+                        ));
+                        clearSelection();
+                      }
+                    }
+                  ]}
+                  itemName="artikel"
+                />
+              </div>
+            )}
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -407,9 +440,9 @@ export default function AdminArticlesPage() {
                       checked={selectedItems.length === filteredArticles.length && filteredArticles.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedItems(filteredArticles.map(a => a.id));
+                          toggleAll(filteredArticles);
                         } else {
-                          setSelectedItems([]);
+                          clearSelection();
                         }
                       }}
                     />
@@ -427,14 +460,8 @@ export default function AdminArticlesPage() {
                   <TableRow key={article.id}>
                     <TableCell>
                       <Checkbox
-                        checked={selectedItems.includes(article.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedItems(prev => [...prev, article.id]);
-                          } else {
-                            setSelectedItems(prev => prev.filter(id => id !== article.id));
-                          }
-                        }}
+                        checked={isSelected(article)}
+                        onCheckedChange={() => toggleItem(article)}
                       />
                     </TableCell>
                     <TableCell>

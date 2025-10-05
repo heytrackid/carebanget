@@ -79,27 +79,28 @@ export interface EducationalContent {
   id: string;
   title: string;
   content: string;
-  category: ContentCategory;
+  category: string;
   ageRange: {
-    min: number; // in months
-    max: number; // in months
+    min: number;
+    max: number;
   };
   tags: string[];
-  readTime: number; // in minutes
-  imageUrl?: string;
+  readTime: number;
+  status?: 'draft' | 'published' | 'archived';
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
-export type IngredientCategory = 
-  | 'protein' 
-  | 'vegetables' 
-  | 'fruits' 
-  | 'grains' 
-  | 'dairy' 
-  | 'spices' 
-  | 'oils' 
+export type IngredientCategory =
+  | 'protein'
+  | 'vegetables'
+  | 'fruits'
+  | 'grains'
+  | 'dairy'
+  | 'spices'
+  | 'oils'
   | 'others';
 
 export type ContentCategory = 
@@ -174,3 +175,68 @@ export type TaskCategory =
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export type TaskStatus = 'todo' | 'in-progress' | 'completed' | 'cancelled';
+
+export interface Expense {
+  id: string;
+  childId?: string; // Optional: expense for specific child
+  category: ExpenseCategory;
+  subcategory?: string;
+  amount: number;
+  currency: string;
+  description: string;
+  date: Date;
+  paymentMethod: PaymentMethod;
+  tags: string[];
+  receipt?: string; // URL to receipt image
+  isRecurring?: boolean;
+  recurrence?: ExpenseRecurrence;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ExpenseRecurrence {
+  type: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  interval: number;
+  endDate?: Date;
+}
+
+export type ExpenseCategory = 
+  | 'food' // Makanan & minuman
+  | 'groceries' // Belanja bulanan
+  | 'health' // Kesehatan & obat-obatan
+  | 'education' // Pendidikan & les
+  | 'clothing' // Pakaian & perlengkapan
+  | 'toys' // Mainan & hiburan
+  | 'childcare' // Penitipan anak
+  | 'transportation' // Transportasi
+  | 'utilities' // Listrik, air, dll
+  | 'other'; // Lain-lain
+
+export type PaymentMethod = 
+  | 'cash' 
+  | 'debit' 
+  | 'credit' 
+  | 'e-wallet' 
+  | 'bank-transfer' 
+  | 'other';
+
+export interface ExpenseSummary {
+  totalExpense: number;
+  byCategory: Record<ExpenseCategory, number>;
+  byChild: Record<string, number>;
+  byMonth: Record<string, number>;
+  averageDaily: number;
+  averageMonthly: number;
+}
+
+export interface Budget {
+  id: string;
+  childId?: string;
+  category: ExpenseCategory;
+  amount: number;
+  period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  startDate: Date;
+  endDate?: Date;
+  alertThreshold?: number; // percentage (e.g., 80 = alert at 80%)
+  isActive: boolean;
+}
