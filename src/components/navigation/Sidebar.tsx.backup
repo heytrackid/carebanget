@@ -138,11 +138,6 @@ export function Sidebar({ children }: SidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center justify-center mb-4">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">C</span>
-            </div>
-          </div>
             <IconLogo />
           </div>
           {!isCollapsed && (
