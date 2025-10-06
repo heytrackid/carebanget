@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo, Suspense, lazy } from 'react';
+import { useState, useMemo, Suspense, lazy, useEffect } from 'react';
 import { Sidebar } from '@/components/navigation/Sidebar';
 import { Task } from '@/types';
 import { mockTasks } from '@/data/mockTasks';
-import { TaskCard } from '@/components/tasks/TaskCard';
+import { TaskCard, DraggableTaskCard } from '@/components/tasks/TaskCard';
 import { TaskFilters, TaskFilters as TaskFiltersType } from '@/components/tasks/TaskFilters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,13 +24,28 @@ import {
   ListTodo,
   BarChart3,
   MoreVertical,
-  Filter,
   SortAsc,
   Download,
   Upload,
-  Settings
+  Settings,
+  Filter
 } from 'lucide-react';
 import { isToday, isTomorrow, isThisWeek, isPast } from 'date-fns';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { createPortal } from 'react-dom';
 
 // Lazy load heavy components
 const TaskForm = lazy(() => import('@/components/tasks/TaskForm').then(module => ({ default: module.TaskForm })));
@@ -40,6 +55,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [filters, setFilters] = useState<TaskFiltersType>({
     search: '',
     category: 'all',
@@ -49,6 +65,15 @@ export default function TasksPage() {
   });
   const [sortBy, setSortBy] = useState<'dueDate' | 'priority' | 'createdAt' | 'title'>('dueDate');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // Filter and sort tasks
   const filteredTasks = useMemo(() => {
@@ -142,7 +167,7 @@ export default function TasksPage() {
       todo: tasks.filter(t => t.status === 'todo').length,
       inProgress: tasks.filter(t => t.status === 'in-progress').length,
       completed: tasks.filter(t => t.status === 'completed').length,
-      overdue: tasks.filter(t => 
+      overdue: tasks.filter(t =>
         t.dueDate && isPast(t.dueDate) && t.status !== 'completed'
       ).length,
     };
@@ -161,9 +186,9 @@ export default function TasksPage() {
     setTasks(prevTasks =>
       prevTasks.map(task =>
         task.id === taskId
-          ? { 
-              ...task, 
-              status, 
+          ? {
+              ...task,
+              status,
               updatedAt: new Date(),
               completedAt: status === 'completed' ? new Date() : undefined
             }
@@ -237,6 +262,98 @@ export default function TasksPage() {
     URL.revokeObjectURL(url);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const task = tasks.find(t => t.id === active.id);
+    setActiveTask(task || null);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Find the containers
+    const activeContainer = findTaskContainer(activeId);
+    const overContainer = findTaskContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    if (activeContainer !== overContainer) {
+      setTasks((tasks) => {
+        const activeItems = tasks.filter((task) => task.status === activeContainer);
+        const overItems = tasks.filter((task) => task.status === overContainer);
+
+        // Find the indexes for the items
+        const activeIndex = activeItems.findIndex((task) => task.id === activeId);
+        const overIndex = overItems.findIndex((task) => task.id === overId);
+
+        let newIndex;
+        if (overId in tasksByStatus) {
+          // We're at the root droppable of a container
+          newIndex = overItems.length + 1;
+        } else {
+          const isBelowOverItem =
+            over &&
+            active.rect.current.translated &&
+            active.rect.current.translated.top > over.rect.top + over.rect.height;
+
+          const modifier = isBelowOverItem ? 1 : 0;
+
+          newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+        }
+
+        return tasks.map((task) => {
+          if (task.id === activeId) {
+            return {
+              ...task,
+              status: overContainer as Task['status'],
+              updatedAt: new Date(),
+            };
+          }
+          return task;
+        });
+      });
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) {
+      setActiveTask(null);
+      return;
+    }
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    const activeContainer = findTaskContainer(activeId);
+    const overContainer = findTaskContainer(overId);
+
+    if (!activeContainer || !overContainer) {
+      setActiveTask(null);
+      return;
+    }
+
+    if (activeContainer !== overContainer) {
+      // Task moved to different column - already handled in handleDragOver
+      setActiveTask(null);
+      return;
+    }
+
+    // Task moved within same column - no reordering needed for now
+    setActiveTask(null);
+  };
+
+  const findTaskContainer = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    return task?.status;
+  };
+
   return (
     <Sidebar>
       <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
@@ -244,13 +361,13 @@ export default function TasksPage() {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Pengelola Tugas</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">To Do List</h1>
               <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 Atur dan pantau tugas-tugas parenting Anda
                 <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
-                  Diurutkan: {sortBy === 'dueDate' ? 'Tanggal Tenggat' : 
-                              sortBy === 'priority' ? 'Prioritas' : 
-                              sortBy === 'title' ? 'Judul' : 'Tanggal Dibuat'} 
+                  Diurutkan: {sortBy === 'dueDate' ? 'Tanggal Tenggat' :
+                              sortBy === 'priority' ? 'Prioritas' :
+                              sortBy === 'title' ? 'Judul' : 'Tanggal Dibuat'}
                   ({sortOrder === 'asc' ? '↑' : '↓'})
                 </span>
               </p>
@@ -391,79 +508,107 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="board" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* To Do Column */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                    <span>Belum Dikerjakan ({tasksByStatus.todo.length})</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {tasksByStatus.todo.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onStatusChange={handleStatusChange}
-                      onEdit={handleEditTask}
-                      onDelete={handleDeleteTask}
-                    />
-                  ))}
-                  {tasksByStatus.todo.length === 0 && (
-                    <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
-                  )}
-                </CardContent>
-              </Card>
+            <DndContext
+              sensors={sensors}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* To Do Column */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                      <span>Belum Dikerjakan ({tasksByStatus.todo.length})</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 min-h-[200px]">
+                    <SortableContext items={tasksByStatus.todo.map(t => t.id)} strategy={verticalListSortingStrategy}>
+                      {tasksByStatus.todo.map((task) => (
+                        <DraggableTaskCard
+                          key={task.id}
+                          task={task}
+                          onStatusChange={handleStatusChange}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                        />
+                      ))}
+                    </SortableContext>
+                    {tasksByStatus.todo.length === 0 && (
+                      <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
+                    )}
+                  </CardContent>
+                </Card>
 
-              {/* In Progress Column */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <span>Dalam Proses ({tasksByStatus['in-progress'].length})</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {tasksByStatus['in-progress'].map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onStatusChange={handleStatusChange}
-                      onEdit={handleEditTask}
-                      onDelete={handleDeleteTask}
-                    />
-                  ))}
-                  {tasksByStatus['in-progress'].length === 0 && (
-                    <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
-                  )}
-                </CardContent>
-              </Card>
+                {/* In Progress Column */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      <span>Dalam Proses ({tasksByStatus['in-progress'].length})</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 min-h-[200px]">
+                    <SortableContext items={tasksByStatus['in-progress'].map(t => t.id)} strategy={verticalListSortingStrategy}>
+                      {tasksByStatus['in-progress'].map((task) => (
+                        <DraggableTaskCard
+                          key={task.id}
+                          task={task}
+                          onStatusChange={handleStatusChange}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                        />
+                      ))}
+                    </SortableContext>
+                    {tasksByStatus['in-progress'].length === 0 && (
+                      <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
+                    )}
+                  </CardContent>
+                </Card>
 
-              {/* Completed Column */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    <span>Selesai ({tasksByStatus.completed.length})</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {tasksByStatus.completed.map((task) => (
+                {/* Completed Column */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                      <span>Selesai ({tasksByStatus.completed.length})</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 min-h-[200px]">
+                    <SortableContext items={tasksByStatus.completed.map(t => t.id)} strategy={verticalListSortingStrategy}>
+                      {tasksByStatus.completed.map((task) => (
+                        <DraggableTaskCard
+                          key={task.id}
+                          task={task}
+                          onStatusChange={handleStatusChange}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                        />
+                      ))}
+                    </SortableContext>
+                    {tasksByStatus.completed.length === 0 && (
+                      <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Drag Overlay - Client-side only */}
+              {typeof window !== 'undefined' && createPortal(
+                <DragOverlay>
+                  {activeTask ? (
                     <TaskCard
-                      key={task.id}
-                      task={task}
-                      onStatusChange={handleStatusChange}
-                      onEdit={handleEditTask}
-                      onDelete={handleDeleteTask}
+                      task={activeTask}
+                      onStatusChange={() => {}}
+                      onEdit={() => {}}
+                      onDelete={() => {}}
                     />
-                  ))}
-                  {tasksByStatus.completed.length === 0 && (
-                    <p className="text-gray-500 text-center py-4">Tidak ada tugas</p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                  ) : null}
+                </DragOverlay>,
+                document.body
+              )}
+            </DndContext>
           </TabsContent>
         </Tabs>
 

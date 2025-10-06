@@ -1,6 +1,6 @@
 -- ===========================================
 -- COMPLETE SUPABASE DATABASE SCHEMA
--- Parenting Meal Planner Application
+-- Carebanget Application
 -- ===========================================
 
 -- Enable necessary extensions

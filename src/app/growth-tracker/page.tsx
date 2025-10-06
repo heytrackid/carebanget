@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { Sidebar } from '@/components/navigation/Sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +11,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { TrendingUp, TrendingDown, Ruler, Weight, Plus, Calendar } from 'lucide-react';
+import { ChartSkeleton } from '@/components/ui/skeleton';
+import React, { Suspense, lazy } from 'react';
+
+// Lazy load chart components
+const GrowthChart = lazy(() => import('@/components/growth/GrowthChart').then(module => ({ default: module.GrowthChart })));
 
 export default function GrowthTrackerPage() {
   const [isAddingRecord, setIsAddingRecord] = useState(false);
@@ -267,54 +271,21 @@ export default function GrowthTrackerPage() {
                   </TabsList>
                   
                   <TabsContent value="weight" className="space-y-4">
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={growthData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="age" label={{ value: 'Usia (bulan)', position: 'insideBottom', offset: -5 }} />
-                          <YAxis label={{ value: 'Berat (kg)', angle: -90, position: 'insideLeft' }} />
-                          <Tooltip 
-                            formatter={(value) => [`${value} kg`, 'Berat Badan']}
-                            labelFormatter={(label) => `Usia: ${label} bulan`}
-                          />
-                          <Area type="monotone" dataKey="weight" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={3} />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <Suspense fallback={<ChartSkeleton />}>
+                      <GrowthChart data={growthData} type="weight" />
+                    </Suspense>
                   </TabsContent>
                   
                   <TabsContent value="height" className="space-y-4">
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={growthData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="age" label={{ value: 'Usia (bulan)', position: 'insideBottom', offset: -5 }} />
-                          <YAxis label={{ value: 'Tinggi (cm)', angle: -90, position: 'insideLeft' }} />
-                          <Tooltip 
-                            formatter={(value) => [`${value} cm`, 'Tinggi Badan']}
-                            labelFormatter={(label) => `Usia: ${label} bulan`}
-                          />
-                          <Area type="monotone" dataKey="height" stroke="#10b981" fill="#10b981" fillOpacity={0.1} strokeWidth={3} />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <Suspense fallback={<ChartSkeleton />}>
+                      <GrowthChart data={growthData} type="height" />
+                    </Suspense>
                   </TabsContent>
                   
                   <TabsContent value="head" className="space-y-4">
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={growthData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="age" label={{ value: 'Usia (bulan)', position: 'insideBottom', offset: -5 }} />
-                          <YAxis label={{ value: 'Lingkar Kepala (cm)', angle: -90, position: 'insideLeft' }} />
-                          <Tooltip 
-                            formatter={(value) => [`${value} cm`, 'Lingkar Kepala']}
-                            labelFormatter={(label) => `Usia: ${label} bulan`}
-                          />
-                          <Area type="monotone" dataKey="headCircumference" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.1} strokeWidth={3} />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <Suspense fallback={<ChartSkeleton />}>
+                      <GrowthChart data={growthData} type="head" />
+                    </Suspense>
                   </TabsContent>
                 </Tabs>
               </CardContent>

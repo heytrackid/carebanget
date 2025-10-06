@@ -6,19 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Plus, Edit, Trash2, Save, Eye, Search, Filter, MoreHorizontal, Clock } from 'lucide-react';
-import { mockRecipes } from '@/data/mockData';
+import { ReactNode } from 'react';
 import { Recipe } from '@/types';
 import Link from 'next/link';
 import { BulkActions, BulkAction, useBulkSelection } from '@/components/ui/bulk-actions';
+import { mockRecipes } from '@/data/mockData';
 
 // Reusable Admin Layout (extracted to avoid duplication)
-function AdminLayout({ children }) {
+function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
@@ -81,7 +81,7 @@ function AdminLayout({ children }) {
 }
 
 // Recipe Form Component
-function RecipeForm({ recipe, onSave, onCancel }) {
+function RecipeForm({ recipe, onSave, onCancel }: { recipe?: Recipe; onSave: (recipe: Recipe) => void; onCancel: () => void }) {
   const [formData, setFormData] = useState({
     name: recipe?.name || '',
     description: recipe?.description || '',
@@ -97,7 +97,7 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     tags: recipe?.tags || [],
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const recipeData = {
@@ -125,16 +125,16 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     });
   };
 
-  const updateIngredient = (index, field, value) => {
+  const updateIngredient = (index: number, field: string, value: any) => {
     const updatedIngredients = [...formData.ingredients];
     updatedIngredients[index] = { ...updatedIngredients[index], [field]: value };
     setFormData({ ...formData, ingredients: updatedIngredients });
   };
 
-  const removeIngredient = (index) => {
+  const removeIngredient = (index: number) => {
     setFormData({
       ...formData,
-      ingredients: formData.ingredients.filter((_, i) => i !== index)
+      ingredients: formData.ingredients.filter((_: any, i: number) => i !== index)
     });
   };
 
@@ -145,16 +145,16 @@ function RecipeForm({ recipe, onSave, onCancel }) {
     });
   };
 
-  const updateInstruction = (index, value) => {
+  const updateInstruction = (index: number, value: string) => {
     const updatedInstructions = [...formData.instructions];
     updatedInstructions[index] = value;
     setFormData({ ...formData, instructions: updatedInstructions });
   };
 
-  const removeInstruction = (index) => {
+  const removeInstruction = (index: number) => {
     setFormData({
       ...formData,
-      instructions: formData.instructions.filter((_, i) => i !== index)
+      instructions: formData.instructions.filter((_: any, i: number) => i !== index)
     });
   };
 
@@ -172,7 +172,7 @@ function RecipeForm({ recipe, onSave, onCancel }) {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Kesulitan</label>
-          <Select value={formData.difficulty} onValueChange={(value) => setFormData({...formData, difficulty: value})}>
+          <Select value={formData.difficulty as 'easy' | 'medium' | 'hard'} onValueChange={(value) => setFormData({...formData, difficulty: value as 'easy' | 'medium' | 'hard'})}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -371,7 +371,7 @@ export default function AdminRecipesPage() {
     clearSelection,
     isSelected,
     selectedCount
-  } = useBulkSelection(filteredRecipes)
+  } = useBulkSelection<Recipe>(filteredRecipes)
 
   // Load recipes
   useEffect(() => {
@@ -562,7 +562,7 @@ export default function AdminRecipesPage() {
                       checked={selectedItems.length === filteredRecipes.length && filteredRecipes.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedItems(filteredRecipes.map(r => r.id));
+                          setSelectedItems(filteredRecipes);
                         } else {
                           setSelectedItems([]);
                         }

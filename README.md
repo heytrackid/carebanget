@@ -60,7 +60,7 @@ Aplikasi web lengkap untuk membantu orang tua merencanakan makanan sehat untuk a
 1. Clone repository
 ```bash
 git clone <repository-url>
-cd parenting-meal-planner
+cd carebanget
 ```
 
 2. Install dependencies

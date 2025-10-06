@@ -144,8 +144,8 @@ Percaya deh, setelah 2-3 minggu, Anda akan heran betapa hidup jadi lebih mudah. 
     tags: ['rencana makan', 'budget', 'kelola waktu', 'kesehatan keluarga', 'persiapan makan'],
     ageRange: { min: 0, max: 144 },
     readTime: 8,
-    imageUrl: '/images/meal-planning.jpg',
-    createdAt: new Date('2024-10-01')
+    createdAt: new Date('2024-10-01'),
+    updatedAt: new Date('2024-10-01')
   },
 
   {
@@ -280,8 +280,8 @@ Ingat: Setiap anak unik. Apa yang berhasil untuk anak lain belum tentu berhasil 
     tags: ['picky eater', 'feeding difficulties', 'child nutrition', 'behavioral eating', 'parenting tips'],
     ageRange: { min: 12, max: 72 },
     readTime: 12,
-    imageUrl: '/images/picky-eater.jpg',
-    createdAt: new Date('2024-10-02')
+    createdAt: new Date('2024-10-02'),
+    updatedAt: new Date('2024-10-02')
   },
 
   // Kesehatan & Perkembangan
@@ -462,8 +462,8 @@ Pertumbuhan anak adalah proses alami. Dengan monitoring yang benar dan nutrisi o
     tags: ['growth monitoring', 'child development', 'WHO standards', 'height weight', 'pediatric care'],
     ageRange: { min: 0, max: 72 },
     readTime: 10,
-    imageUrl: '/images/growth-monitoring.jpg',
-    createdAt: new Date('2024-10-03')
+    createdAt: new Date('2024-10-03'),
+    updatedAt: new Date('2024-10-03')
   },
 
   // Waktu & Energi
@@ -620,8 +620,8 @@ Ingat: Anak belajar dari bagaimana Anda mengelola waktu dan energi. Jadilah mode
     tags: ['time management', 'work life balance', 'parenting energy', 'family systems', 'self care'],
     ageRange: { min: 0, max: 144 },
     readTime: 9,
-    imageUrl: '/images/time-management.jpg',
-    createdAt: new Date('2024-10-04')
+    createdAt: new Date('2024-10-04'),
+    updatedAt: new Date('2024-10-04')
   },
 
   // Edukasi & Informasi
@@ -833,8 +833,8 @@ Parenting yang baik datang dari hati yang tenang, bukan kepala yang penuh inform
     tags: ['information overload', 'parenting research', 'trusted sources', 'critical thinking', 'parenting anxiety'],
     ageRange: { min: 0, max: 144 },
     readTime: 11,
-    imageUrl: '/images/information-overload.jpg',
-    createdAt: new Date('2024-10-05')
+    createdAt: new Date('2024-10-05'),
+    updatedAt: new Date('2024-10-05')
   },
 
   // Mental & Emosi
@@ -1039,8 +1039,8 @@ Ingat: Anak memilih kamu sebagai orang tua karena mereka tahu kamu punya kapasit
     tags: ['parenting stress', 'mental health', 'emotional regulation', 'self care', 'parenting burnout'],
     ageRange: { min: 0, max: 144 },
     readTime: 13,
-    imageUrl: '/images/parenting-stress.jpg',
-    createdAt: new Date('2024-10-06')
+    createdAt: new Date('2024-10-06'),
+    updatedAt: new Date('2024-10-06')
   },
 
   // Finansial
@@ -1258,8 +1258,8 @@ Remember: Children learn financial habits from observing their parents. Model go
     tags: ['parenting budget', 'family finances', 'saving tips', 'education fund', 'financial planning'],
     ageRange: { min: 0, max: 144 },
     readTime: 14,
-    imageUrl: '/images/parenting-budget.jpg',
-    createdAt: new Date('2024-10-07')
+    createdAt: new Date('2024-10-07'),
+    updatedAt: new Date('2024-10-07')
   }
 ];
 

@@ -34,7 +34,11 @@ export function OfflineIndicator() {
       {isOnline ? (
         <>
           <Wifi className="w-4 h-4" />
-          {isRealtimeConnected           <Wifi className="w-4 h-4" />          <Wifi className="w-4 h-4" /> <Zap className="w-4 h-4 text-yellow-500" title="Real-time sync active" />}
+          {isRealtimeConnected ? (
+            <span title="Real-time sync active">
+              <Zap className="w-4 h-4 text-yellow-500" />
+            </span>
+          ) : null}
           <span className="text-sm font-medium">Online</span>
           {isRegistered && <Cloud className="w-4 h-4 text-green-600" />}
         </>

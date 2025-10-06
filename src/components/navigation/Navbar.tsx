@@ -5,6 +5,18 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Menu,
+  Baby,
+  Calendar,
+  Sparkles,
+  BookOpen,
+  CheckSquare,
+  ClipboardList,
+  TrendingUp,
+  ShoppingCart,
+  User
+} from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Baby },
@@ -28,7 +40,8 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-            <HeaderLogo />
+              <HeaderLogo />
+            </Link>
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => {
@@ -73,6 +86,7 @@ export function Navbar() {
                 </div>
               </SheetContent>
             </Sheet>
+          </div>
           </div>
         </div>
       </div>

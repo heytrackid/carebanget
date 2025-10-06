@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { taskCategories, taskPriorities, taskStatuses } from '@/data/mockTasks';
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface TaskCardProps {
   task: Task;
@@ -53,7 +55,7 @@ export function TaskCard({ task, onStatusChange, onEdit, onDelete }: TaskCardPro
   };
 
   return (
-    <Card className={`transition-all duration-200 hover:shadow-md ${
+    <Card className={`cursor-grab transition-all duration-200 hover:shadow-md ${
       task.status === 'completed' ? 'opacity-75' : ''
     } ${isOverdue ? 'border-red-200 bg-red-50/30' : ''}`}>
       <CardHeader className="pb-3">
@@ -172,5 +174,49 @@ export function TaskCard({ task, onStatusChange, onEdit, onDelete }: TaskCardPro
         )}
       </CardContent>
     </Card>
+  );
+}
+
+// Draggable version for board view
+interface DraggableTaskCardProps extends TaskCardProps {
+  isDragging?: boolean;
+}
+
+export function DraggableTaskCard({ task, onStatusChange, onEdit, onDelete, isDragging }: DraggableTaskCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: sortableIsDragging,
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: 'Task',
+      task,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`${isDragging || sortableIsDragging ? 'opacity-50 cursor-grabbing' : 'cursor-grab'} hover:shadow-lg transition-shadow`}
+    >
+      <TaskCard
+        task={task}
+        onStatusChange={onStatusChange}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </div>
   );
 }

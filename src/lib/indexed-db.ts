@@ -48,7 +48,9 @@ export async function initDB() {
         const contentStore = db.createObjectStore('educational_content', {
           keyPath: 'id'
         });
+        // @ts-ignore
         contentStore.createIndex('category', 'category');
+        // @ts-ignore
         contentStore.createIndex('lastAccessed', 'lastAccessed');
       }
 
@@ -57,7 +59,9 @@ export async function initDB() {
         const recipeStore = db.createObjectStore('recipes', {
           keyPath: 'id'
         });
+        // @ts-ignore
         recipeStore.createIndex('name', 'name');
+        // @ts-ignore
         recipeStore.createIndex('lastAccessed', 'lastAccessed');
       }
 
@@ -66,7 +70,9 @@ export async function initDB() {
         const actionStore = db.createObjectStore('user_actions', {
           keyPath: 'id'
         });
+        // @ts-ignore
         actionStore.createIndex('synced', 'synced');
+        // @ts-ignore
         actionStore.createIndex('timestamp', 'timestamp');
       }
     },
@@ -134,7 +140,7 @@ export async function queueOfflineAction(action: Omit<ParentingMealDB['user_acti
 
 export async function getUnsyncedActions() {
   const db = await initDB();
-  return await db.getAllFromIndex('user_actions', 'synced', false);
+  return await db.getAllFromIndex('user_actions', 'synced' as any, false);
 }
 
 export async function markActionSynced(id: string) {
@@ -153,7 +159,7 @@ export async function clearOldData() {
 
   // Clear old educational content
   const contentTx = db.transaction('educational_content', 'readwrite');
-  const oldContent = await contentTx.store.index('lastAccessed').getAll(IDBKeyRange.upperBound(oneWeekAgo));
+  const oldContent = await contentTx.store.index('lastAccessed' as any).getAll(IDBKeyRange.upperBound(oneWeekAgo));
   for (const item of oldContent) {
     await contentTx.store.delete(item.id);
   }
@@ -161,7 +167,7 @@ export async function clearOldData() {
 
   // Clear old recipes
   const recipeTx = db.transaction('recipes', 'readwrite');
-  const oldRecipes = await recipeTx.store.index('lastAccessed').getAll(IDBKeyRange.upperBound(oneWeekAgo));
+  const oldRecipes = await recipeTx.store.index('lastAccessed' as any).getAll(IDBKeyRange.upperBound(oneWeekAgo));
   for (const item of oldRecipes) {
     await recipeTx.store.delete(item.id);
   }

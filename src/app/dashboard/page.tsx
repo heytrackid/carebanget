@@ -2,17 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sidebar } from '@/components/navigation/Sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Calendar, 
-  TrendingUp, 
-  ShoppingCart, 
-  BookOpen, 
+import {
+  Calendar,
+  TrendingUp,
+  ShoppingCart,
+  BookOpen,
   Clock,
   Heart,
   ChefHat,
@@ -24,17 +23,18 @@ import {
   CheckSquare
 } from 'lucide-react';
 import { mockChild } from '@/data/mockData';
+import { Sidebar } from '@/components/navigation/Sidebar';
 import { WeeklyChart } from '@/components/dashboard/WeeklyChart.lazy';
 import { TaskWidget } from '@/components/dashboard/TaskWidget.lazy';
 import { NotificationPanel } from '@/components/notifications/NotificationPanel';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { mockTasks } from '@/data/mockTasks';
+import { ChartSkeleton, CardSkeleton } from '@/components/ui/skeleton';
+import React, { Suspense } from 'react';
 
 export default function DashboardPage() {
   const [selectedChild] = useState(mockChild);
   const { checkTaskNotifications } = useNotifications();
-
-  // Mock dashboard data
   const dashboardStats = {
     totalMeals: 28,
     completedMeals: 21,
@@ -72,7 +72,7 @@ export default function DashboardPage() {
 
   return (
     <Sidebar>
-      <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -198,7 +198,9 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-6 sm:mb-8">
           {/* Weekly Analytics Chart */}
-          <WeeklyChart />
+          <Suspense fallback={<ChartSkeleton />}>
+            <WeeklyChart />
+          </Suspense>
 
           {/* Nutrition Goals */}
           <Card>
@@ -269,7 +271,9 @@ export default function DashboardPage() {
 
           {/* Task Widget */}
           <div className="lg:col-span-1">
-            <TaskWidget />
+            <Suspense fallback={<CardSkeleton />}>
+              <TaskWidget />
+            </Suspense>
           </div>
 
           {/* Recent Activities */}
