@@ -3,7 +3,7 @@ import { auth0 } from "./lib/auth0";
 import { createClient } from '@/lib/supabase/server';
 
 export async function middleware(request: NextRequest) {
-  // First check authentication
+  // Auth0 middleware handles authentication
   const authResponse = await auth0.middleware(request);
 
   // If it's an auth-related request, let it pass through
@@ -11,29 +11,30 @@ export async function middleware(request: NextRequest) {
     return authResponse;
   }
 
-  // For protected routes, check if user needs profile creation
+  // For protected routes, check if user has valid Auth0 session
+  // and ensure they have a profile in Supabase
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     try {
-      const supabase = await createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const session = await auth0.getSession(request);
 
-      if (user) {
-        // Check if profile exists, if not, trigger creation
+      if (session?.user) {
+        // Check if profile exists, if not, create it
+        const supabase = createClient();
         const { data: profile } = await supabase
           .from('user_profiles')
           .select('id')
-          .eq('id', user.id)
+          .eq('id', session.user.sub)
           .single();
 
         if (!profile) {
-          // Profile doesn't exist, create it
+          // Create profile with Auth0 user info
           await supabase
             .from('user_profiles')
             .insert({
-              id: user.id,
-              email: user.email,
-              full_name: user.user_metadata?.name || user.email?.split('@')[0],
-              avatar_url: user.user_metadata?.picture,
+              id: session.user.sub,
+              email: session.user.email,
+              full_name: session.user.name || session.user.email?.split('@')[0],
+              avatar_url: session.user.picture,
               payment_status: 'unpaid',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
@@ -42,12 +43,10 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       console.error('Middleware profile creation error:', error);
-      // Continue anyway - don't block the request
+      // Continue anyway - let client-side handle authentication errors
     }
   }
 
-  // For protected routes, we let the client-side component handle payment checks
-  // The middleware focuses on authentication only
   return authResponse;
 }
 
