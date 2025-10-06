@@ -73,7 +73,7 @@ export default async function HomePage() {
                 <Separator />
 
                 <Button asChild variant="ghost" className="w-full text-gray-600 hover:text-gray-900">
-                  <a href="/auth/logout">
+                  <a href="/auth/logout?returnTo=/">
                     Sign Out
                   </a>
                 </Button>
