@@ -18,7 +18,7 @@ export default async function HomePage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Carebanget</h1>
-            <p className="text-sm text-gray-600 mt-1">AI-powered meal planning and nutrition tracking</p>
+            <p className="text-sm text-gray-600 mt-1">Perencanaan makanan dan pelacakan nutrisi berbasis AI</p>
           </div>
         </div>
 
@@ -26,12 +26,12 @@ export default async function HomePage() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-lg">
-              {session ? `Welcome back, ${session.user.name}!` : "Welcome"}
+              {session ? `Selamat datang kembali, ${session.user.name}!` : "Selamat Datang"}
             </CardTitle>
             <CardDescription>
               {session
-                ? "Ready to manage your family's nutrition?"
-                : "Sign in to access your meal planning dashboard"
+                ? "Siap mengelola nutrisi keluarga Anda?"
+                : "Masuk untuk mengakses dashboard perencanaan makan Anda"
               }
             </CardDescription>
           </CardHeader>
@@ -42,7 +42,7 @@ export default async function HomePage() {
                 <div className="space-y-3">
                   <Button asChild className="w-full">
                     <a href="/auth/login?screen_hint=signup">
-                      Get Started
+                      Mulai Sekarang
                     </a>
                   </Button>
 
@@ -51,13 +51,13 @@ export default async function HomePage() {
                       <Separator className="w-full" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">Already have an account?</span>
+                      <span className="bg-white px-2 text-gray-500">Sudah punya akun?</span>
                     </div>
                   </div>
 
                   <Button asChild variant="outline" className="w-full">
                     <a href="/auth/login">
-                      Sign In
+                      Masuk
                     </a>
                   </Button>
                 </div>
@@ -66,7 +66,7 @@ export default async function HomePage() {
               <div className="space-y-3">
                 <Button asChild className="w-full">
                   <a href="/dashboard">
-                    Go to Dashboard
+                    Ke Dashboard
                   </a>
                 </Button>
 
@@ -74,7 +74,7 @@ export default async function HomePage() {
 
                 <Button asChild variant="ghost" className="w-full text-gray-600 hover:text-gray-900">
                   <a href="/auth/logout?returnTo=/">
-                    Sign Out
+                    Keluar
                   </a>
                 </Button>
               </div>
@@ -85,7 +85,7 @@ export default async function HomePage() {
         {/* Footer */}
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            Powered by Auth0 • Made for parents
+            Ditenagai oleh Auth0 • Dibuat untuk orang tua
           </p>
         </div>
       </div>
