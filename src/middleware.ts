@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     return authResponse;
   }
 
-  // For protected routes, ensure user exists in Supabase and has profile
+  // For protected routes, ensure user has profile in Supabase
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     try {
       const session = await auth0.getSession(request);
@@ -19,37 +19,37 @@ export async function middleware(request: NextRequest) {
       if (session?.user) {
         const supabase = createClient();
 
-        // This will trigger the database trigger to create profile if it doesn't exist
-        // The database trigger on auth.users will auto-create user_profiles
-        const { data: { user }, error } = await supabase.auth.getUser();
-
-        if (error) {
-          console.error('Supabase auth error:', error);
-        }
-
-        // Also ensure profile exists in user_profiles table
+        // Check if profile exists in user_profiles
         const { data: profile } = await supabase
           .from('user_profiles')
-          .select('id')
+          .select('id, payment_status')
           .eq('id', session.user.sub)
           .single();
 
         if (!profile) {
-          // Manual profile creation as fallback
-          console.log('Creating profile for user:', session.user.email);
-          const { error: profileError } = await supabase.rpc('create_user_profile', {
-            user_id: session.user.sub,
-            user_email: session.user.email,
-            user_name: session.user.name || null
-          });
+          // Create profile directly in user_profiles table
+          console.log('Creating profile for Auth0 user:', session.user.email);
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: session.user.sub,
+              email: session.user.email,
+              full_name: session.user.name || session.user.email?.split('@')[0],
+              avatar_url: session.user.picture,
+              payment_status: 'unpaid',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
 
           if (profileError) {
             console.error('Profile creation error:', profileError);
+          } else {
+            console.log('Profile created successfully for:', session.user.email);
           }
         }
       }
     } catch (error) {
-      console.error('Middleware error:', error);
+      console.error('Middleware profile creation error:', error);
       // Continue anyway - don't block the request
     }
   }
