@@ -6,6 +6,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { OfflineProvider } from '@/contexts/OfflineContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { queryClient } from '@/lib/react-query';
+import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { ProfileSyncProvider } from '@/components/ProfileSyncProvider';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +26,17 @@ export default function RootLayout({
         <meta name="theme-color" content="#667eea" />
       </head>
       <body className={inter.className}>
-        <QueryClientProvider client={queryClient}>
-          <NotificationProvider>
-            <OfflineProvider>
-              {children}
-            </OfflineProvider>
-          </NotificationProvider>
-        </QueryClientProvider>
+        <UserProvider>
+          <QueryClientProvider client={queryClient}>
+            <NotificationProvider>
+              <OfflineProvider>
+                <ProfileSyncProvider>
+                  {children}
+                </ProfileSyncProvider>
+              </OfflineProvider>
+            </NotificationProvider>
+          </QueryClientProvider>
+        </UserProvider>
       </body>
     </html>
   );
