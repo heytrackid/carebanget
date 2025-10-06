@@ -28,6 +28,7 @@ import { WeeklyChart } from '@/components/dashboard/WeeklyChart.lazy';
 import { TaskWidget } from '@/components/dashboard/TaskWidget.lazy';
 import { NotificationPanel } from '@/components/notifications/NotificationPanel';
 import { useNotifications } from '@/contexts/NotificationContext';
+import PaymentGuard from '@/components/PaymentGuard';
 import { mockTasks } from '@/data/mockTasks';
 import { ChartSkeleton, CardSkeleton } from '@/components/ui/skeleton';
 import React, { Suspense } from 'react';
@@ -65,14 +66,15 @@ export default function DashboardPage() {
 
   const nutritionGoals = [
     { name: 'Kalori Harian', current: 850, target: 1000, unit: 'kcal', color: 'bg-blue-500' },
-    { name: 'Protein', current: 25, target: 30, unit: 'g', color: 'bg-green-500' },
     { name: 'Kalsium', current: 400, target: 500, unit: 'mg', color: 'bg-yellow-500' },
     { name: 'Zat Besi', current: 8, target: 10, unit: 'mg', color: 'bg-red-500' },
   ];
 
   return (
-    <Sidebar>
-        <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+    <PaymentGuard>
+      <Sidebar>
+        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -353,8 +355,10 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-      <NotificationPanel />
-    </Sidebar>
-  );
+          </div>
+        </div>
+        <NotificationPanel />
+      </Sidebar>
+      </PaymentGuard>
+    );
 }

@@ -1,9 +1,18 @@
 import type { NextRequest } from "next/server";
-
 import { auth0 } from "./lib/auth0";
 
 export async function middleware(request: NextRequest) {
-  return await auth0.middleware(request);
+  // First check authentication
+  const authResponse = await auth0.middleware(request);
+
+  // If it's an auth-related request, let it pass through
+  if (request.nextUrl.pathname.startsWith('/auth/')) {
+    return authResponse;
+  }
+
+  // For protected routes, we let the client-side component handle payment checks
+  // The middleware focuses on authentication only
+  return authResponse;
 }
 
 export const config = {
