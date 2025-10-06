@@ -41,6 +41,12 @@ double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = false
 
+# Auth0 Third-Party Authentication
+[auth.third_party.auth0]
+enabled = true
+tenant = "4ne0rq3n8l2dq1mr"
+# tenant_region not needed for default region
+
 [db]
 # Port to use for the local database URL.
 port = 54322
