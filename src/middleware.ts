@@ -27,24 +27,52 @@ export async function middleware(request: NextRequest) {
           .single();
 
         if (!profile) {
-          // Create profile directly in user_profiles table
-          console.log('Creating profile for Auth0 user:', session.user.email);
-          const { error: profileError } = await supabase
+          // Check if this email has already paid (pre-paid flow)
+          const { data: existingProfile } = await supabase
             .from('user_profiles')
-            .insert({
-              id: session.user.sub,
-              email: session.user.email,
-              full_name: session.user.name || session.user.email?.split('@')[0],
-              avatar_url: session.user.picture,
-              payment_status: 'unpaid',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
+            .select('id, payment_status')
+            .eq('email', session.user.email)
+            .eq('payment_status', 'paid')
+            .single();
 
-          if (profileError) {
-            console.error('Profile creation error:', profileError);
+          if (existingProfile) {
+            // User has already paid, create profile with paid status
+            console.log('Found existing paid user, creating Auth0 profile:', session.user.email);
+            const { error: profileError } = await supabase
+              .from('user_profiles')
+              .insert({
+                id: session.user.sub,
+                email: session.user.email,
+                full_name: session.user.name || session.user.email?.split('@')[0],
+                avatar_url: session.user.picture,
+                payment_status: 'paid', // Inherit paid status
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+
+            if (profileError) {
+              console.error('Profile creation error:', profileError);
+            } else {
+              console.log('Paid profile created successfully for:', session.user.email);
+            }
           } else {
-            console.log('Profile created successfully for:', session.user.email);
+            // New user, create with unpaid status
+            console.log('Creating new unpaid profile for:', session.user.email);
+            const { error: profileError } = await supabase
+              .from('user_profiles')
+              .insert({
+                id: session.user.sub,
+                email: session.user.email,
+                full_name: session.user.name || session.user.email?.split('@')[0],
+                avatar_url: session.user.picture,
+                payment_status: 'unpaid',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+
+            if (profileError) {
+              console.error('Profile creation error:', profileError);
+            }
           }
         }
       }
