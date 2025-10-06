@@ -11,15 +11,23 @@ export async function middleware(request: NextRequest) {
     return authResponse;
   }
 
-  // For protected routes, check if user has valid Auth0 session
-  // and ensure they have a profile in Supabase
+  // For protected routes, ensure user exists in Supabase and has profile
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     try {
       const session = await auth0.getSession(request);
 
       if (session?.user) {
-        // Check if profile exists, if not, create it
         const supabase = createClient();
+
+        // This will trigger the database trigger to create profile if it doesn't exist
+        // The database trigger on auth.users will auto-create user_profiles
+        const { data: { user }, error } = await supabase.auth.getUser();
+
+        if (error) {
+          console.error('Supabase auth error:', error);
+        }
+
+        // Also ensure profile exists in user_profiles table
         const { data: profile } = await supabase
           .from('user_profiles')
           .select('id')
@@ -27,23 +35,22 @@ export async function middleware(request: NextRequest) {
           .single();
 
         if (!profile) {
-          // Create profile with Auth0 user info
-          await supabase
-            .from('user_profiles')
-            .insert({
-              id: session.user.sub,
-              email: session.user.email,
-              full_name: session.user.name || session.user.email?.split('@')[0],
-              avatar_url: session.user.picture,
-              payment_status: 'unpaid',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
+          // Manual profile creation as fallback
+          console.log('Creating profile for user:', session.user.email);
+          const { error: profileError } = await supabase.rpc('create_user_profile', {
+            user_id: session.user.sub,
+            user_email: session.user.email,
+            user_name: session.user.name || null
+          });
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+          }
         }
       }
     } catch (error) {
-      console.error('Middleware profile creation error:', error);
-      // Continue anyway - let client-side handle authentication errors
+      console.error('Middleware error:', error);
+      // Continue anyway - don't block the request
     }
   }
 
